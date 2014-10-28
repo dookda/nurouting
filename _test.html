@@ -1,0 +1,124 @@
+<html>
+<head>
+  <title>ex3-BasedLayer</title>
+  <meta http-equiv="content-type" content="text/html; charset=tis-620">
+  </head>
+	<script src="openlayers/lib/OpenLayers.js"></script>
+    <body onload="init()">
+      <div style="width:100%; height:100%" id="map-id"></div>
+	  
+	<script>
+	OpenLayers.ProxyHost = "geoproxy.php?url="
+	var lon = 100.15868;
+	var lat = 14.194800;
+	var zoom = 6 ;
+	var info;
+	
+	function init () {
+		var map = new OpenLayers.Map("map-id",{projection: 'EPSG:3857'});
+		
+		
+		var basemap1 = new OpenLayers.Layer.WMS(
+			"OpenGeo OSM",
+			"http://maps.opengeo.org/geowebcache/service/wms",
+			{layers: "openstreetmap", format: "image/png"}
+		);
+				
+		var basemap2 = new OpenLayers.Layer.WMS(
+                "Bluemarble Imagery",
+                "http://maps.opengeo.org/geowebcache/service/wms",
+                {layers: "bluemarble"}
+            );
+			
+		var bing = new OpenLayers.Layer.Bing({
+				key: "AqTGBsziZHIJYYxgivLBf0hVdrAk9mWO5cQcb8Yux8sW5M8c8opEC2lZqKR1ZZXf",
+				type: "AerialWithLabels",
+			});
+			//map.addLayer(bing);
+			
+			
+		var osm = new OpenLayers.Layer.OSM();
+			//map.addLayer(osm);
+			
+		// GeoServer MapService
+		
+		var layers1 = new OpenLayers.Layer.WMS(
+                "ความเข้มแสงรายตำบล",
+                "http://localhost:8080/geoserver/wms?",
+                {
+				layers: "EGAT:plk_tambon_solar",
+				transparent: "true",
+				format: "image/png"
+				},
+				{isBaseLayer: false, visibility: false}
+            );
+			
+		var layers2 = new OpenLayers.Layer.WMS(
+                "ขอบเขตอำเภอ",
+                "http://localhost:8080/geoserver/wms?",
+                {
+				layers: "EGAT:plk_amphoe",
+				transparent: "true",
+				format: "image/png"
+				},
+				{isBaseLayer: false, visibility: false}
+            );
+			
+		info = new OpenLayers.Control.WMSGetFeatureInfo({
+            url: 'http://localhost:8080/geoserver/wms', //add data
+            title: 'Identify features by clicking',
+			layers: [layers2,layers1],
+            queryVisible: true,
+			infoFormat:'application/vnd.ogc.gml',
+            eventListeners: {
+                getfeatureinfo: function(event) {
+                    map.addPopup(new OpenLayers.Popup.FramedCloud(
+                        "chicken", 
+                        map.getLonLatFromPixel(event.xy),
+                        null,
+                        //event.text,
+						GenPopupText(event),
+                        null,
+                        true
+                    ));
+                }
+            }
+        });
+        map.addControl(info);
+        info.activate();
+		//alert (info);	
+		function GenPopupText(evt){
+                 var temstr="<b><i>" + evt.features[0].gml.featureType + "</i></b><br/>"; // Layer Name
+					//alert (temstr);
+				var jan, feb, mar;
+                 for(var key in evt.features[0].attributes)
+                 {
+                    temstr += "<b>" + key + "</b>:" + evt.features[0].attributes[key] + "<br/>"; //alert(key);
+
+					if(key == "Solar_JAN" ){
+						jan = evt.features[0].attributes[key];
+					}else if (key == "Solar_FEB" ){
+						feb = evt.features[0].attributes[key];
+					}else if (key == "Solar_MAR" ){
+						mar = evt.features[0].attributes[key];
+					}else{
+					
+					}
+					
+                 }
+					temstr += "<img src=\"//chart.googleapis.com/chart?chxt=y&chbh=a&chs=300x225&cht=bvg&chco=A2C180&chd=t:"+jan+","+feb+","+mar+"&chtt=Vertical+bar+chart\" width=\"300\" height=\"225\" />"
+					//temstr += "<img src=\"http://www.w3schools.com/images/compatible_opera.gif\" >"
+                 return temstr
+        }
+		
+		
+		map.addLayers([bing,osm,basemap1,basemap2,layers1,layers2]); // add multi-layer
+		map.setCenter(new OpenLayers.LonLat(lon, lat).transform('EPSG:4326', 'EPSG:3857'), zoom);
+		map.addControl(new OpenLayers.Control.LayerSwitcher());
+	
+	}
+	</script>
+	  
+	  
+    </body>
+</html>
