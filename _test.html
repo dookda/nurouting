@@ -43,7 +43,7 @@
 		// GeoServer MapService
 		
 		var layers1 = new OpenLayers.Layer.WMS(
-                "§«“¡‡¢È¡· ß√“¬µ”∫≈",
+                "Test Chingchai,
                 "http://localhost:8080/geoserver/wms?",
                 {
 				layers: "EGAT:plk_tambon_solar",
@@ -54,7 +54,7 @@
             );
 			
 		var layers2 = new OpenLayers.Layer.WMS(
-                "¢Õ∫‡¢µÕ”‡¿Õ",
+                "Test Sakda"
                 "http://localhost:8080/geoserver/wms?",
                 {
 				layers: "EGAT:plk_amphoe",
@@ -88,12 +88,12 @@
         info.activate();
 		//alert (info);	
 		function GenPopupText(evt){
-†††††††††††††††††var temstr="<b><i>" + evt.features[0].gml.featureType + "</i></b><br/>"; // Layer Name
+var temstr="<b><i>" + evt.features[0].gml.featureType + "</i></b><br/>"; // Layer Name
 					//alert (temstr);
 				var jan, feb, mar;
-†††††††††††††††††for(var key in evt.features[0].attributes)
-†††††††††††††††††{
-††††††††††††††††††††temstr += "<b>" + key + "</b>:" + evt.features[0].attributes[key] + "<br/>"; //alert(key);
+for(var key in evt.features[0].attributes)
+{
+temstr += "<b>" + key + "</b>:" + evt.features[0].attributes[key] + "<br/>"; //alert(key);
 
 					if(key == "Solar_JAN" ){
 						jan = evt.features[0].attributes[key];
@@ -105,11 +105,11 @@
 					
 					}
 					
-†††††††††††††††††}
+}
 					temstr += "<img src=\"//chart.googleapis.com/chart?chxt=y&chbh=a&chs=300x225&cht=bvg&chco=A2C180&chd=t:"+jan+","+feb+","+mar+"&chtt=Vertical+bar+chart\" width=\"300\" height=\"225\" />"
 					//temstr += "<img src=\"http://www.w3schools.com/images/compatible_opera.gif\" >"
-†††††††††††††††††return temstr
-††††††††}
+return temstr
+}
 		
 		
 		map.addLayers([bing,osm,basemap1,basemap2,layers1,layers2]); // add multi-layer
